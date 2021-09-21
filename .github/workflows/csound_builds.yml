@@ -43,10 +43,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install cmake libsndfile1-dev libasound2-dev libjack-dev portaudio19-dev libportmidi-dev libpulse-dev swig liblua5.1-0-dev default-jdk libfltk1.1-dev libfluidsynth-dev liblo-dev fluid ladspa-sdk libpng-dev dssi-dev libstk0-dev libgmm++-dev bison flex libportsmf-dev libeigen3-dev libcunit1-dev
       - name: Configure build
+      - name: Configure Build
         run: cmake -B build -S . -DUSE_VCPKG=1
       - name: Build Csound
         run: cmake --build build --config Release
-      - name: Run tests
+      - name: Run Tests
         run: cmake --build build --target test csdtests
 
   macos_build:
@@ -59,20 +60,20 @@ jobs:
           fetch-depth: 1
       - name: Install Dependencies
         run: brew install cmake swig eigen asio libsndfile portaudio portmidi libsamplerate liblo jack openjdk hdf5 gettext fluid-synth fltk stk wiiuse
-      - name: Configure build
+      - name: Configure Build
         run: mkdir build && cd build && cmake ..
       - name: Build Csound
         run: cd build && make
-      - name: Run tests
+      - name: Run Tests
         run: cd build && make test csdtests
 
   emscripten_build:
     name: EMscripten build
     runs-on: ubuntu-latest
     steps:
-      - name: run the Docker image
+      - name: Run Docker Image
         run: docker run --name csound_test_run -i sjamble/csound_emscripten
-      - name: copying build out of container
+      - name: Copy Build from Container
         run: docker cp csound_test_run:/csound/Emscripten/csound-web-6.17.0.zip .
       - uses: actions/upload-artifact@v2
         with:
@@ -83,9 +84,9 @@ jobs:
     name: Android build
     runs-on: ubuntu-latest
     steps:
-      - name: run the Docker image
+      - name: Run Docker Image
         run: docker run --name csound_test_run -i sjamble/csound_android
-      - name: copying build out of container
+      - name: Copy Build from Container
         run: docker cp csound_test_run:/csound/Android/csound-android-6.17.0.zip .
       - uses: actions/upload-artifact@v2
         with:
@@ -101,7 +102,7 @@ jobs:
         with:
           fetch-depth: 1
           submodules: true
-      - name: Install system dependencies
+      - name: Install System Dependencies
         run: |
           choco install -y winflexbison
       - name: Bootstrap VCPKG
@@ -116,18 +117,18 @@ jobs:
           -name "GitHub"
           -username "csound"
           -password "${{ secrets.GITHUB_TOKEN }}"
-      - name: Configure build
+      - name: Configure Build
         run: cmake -B build -S . -DUSE_VCPKG=1 -DCUSTOM_CMAKE="./platform/windows/Custom-vs.cmake"
       - name: Build Csound
         run: cmake --build build --config Release
-      - name: Run tests
+      - name: Run Tests
         run: cmake --build build --target csdtests
       - name: Acquire Csound manual
         shell: powershell
         run: |
           Invoke-WebRequest -Uri "https://github.com/csound/manual/releases/download/6.16.0/Csound6.16.0_manual_html.zip" -OutFile "./manual.zip"
           7z x manual.zip
-      - name: Build installer
+      - name: Build Installer
         shell: powershell
         run: |
           $Env:RedistVersion=Get-Content "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\Microsoft.VCRedistVersion.default.txt"
@@ -135,13 +136,13 @@ jobs:
           $Env:VCREDIST_CXXAMP_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\${Env:RedistVersion}\x64\Microsoft.VC142.CXXAMP"
           $Env:VCREDIST_OPENMP_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\${Env:RedistVersion}\x64\Microsoft.VC142.OpenMP"
           iscc /o. installer\\windows\\csound6_x64_github.iss
-      - name: Upload installer
+      - name: Upload Installer
         uses: actions/upload-artifact@v2
         with:
           name: csound-${{env.CSOUND_VERSION}}.${{github.run_number}}-windows-x64-installer
           path: ./csound-windows_x86_64-*.exe
           if-no-files-found: error
-      - name: Upload zip
+      - name: Upload Zip
         uses: actions/upload-artifact@v2
         with:
           name: csound-${{env.CSOUND_VERSION}}-${{github.run_number}}-windows-x64-binaries
