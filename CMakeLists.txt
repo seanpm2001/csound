@@ -1318,7 +1318,7 @@ if(BUILD_STATIC_LIBRARY)
     target_compile_options(${CSOUNDLIB_STATIC} PRIVATE ${libcsound_CFLAGS})
 
     if(MSVC)
-        target_link_libraries(${CSOUNDLIB_STATIC} PRIVATE SndFile::sndfile ${CSOUND_WINDOWS_LIBRARIES})
+        target_link_libraries(${CSOUNDLIB_STATIC} PRIVATE ${CSOUND_WINDOWS_LIBRARIES})
     else()
         target_link_libraries(${CSOUNDLIB_STATIC} ${libcsound_LIBS})
     endif()
